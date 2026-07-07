@@ -1,6 +1,8 @@
-# Keep your résumé and generated data private by default.
-inbox/input.md
-inbox/jobs.md
+# inbox/input.md and inbox/jobs.md are tracked as guidance-only TEMPLATES so the
+# structure ships with the repo. They contain no résumé/job data. To keep your
+# own edits from ever being committed, run once:
+#   git update-index --skip-worktree inbox/input.md inbox/jobs.md
+# Generated data stays private by default:
 data/jobs/details/*.md
 data/results/*.md
 data/manual-search-links.md
