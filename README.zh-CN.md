@@ -92,6 +92,13 @@ Description: <把完整的职位描述粘贴到这里>
 LinkedIn 等受限聚合站点则需要粘贴完整的 **Description**。`output/ranking.html` 中的
 **Advanced** 面板提供了预填的 LinkedIn / Indeed / Google 搜索链接，方便你快速找到这些职位。
 
+### ⏭️ 已经有目标职位清单？可以跳过找工作步骤
+
+如果你已经明确想投的职位，就完全不需要 **map** 和 **source** 步骤。只需把每个职位按上面的
+块格式粘贴进 **`inbox/jobs.md`**，然后只运行 **ingest → rank** 即可。每个粘贴进来的职位都会
+对照你的简历 + 偏好打分，并生成专属的**定制简历摘要（tailored summary）**——输出完全一样，
+只是省去了找公司的步骤。
+
 ## 工作原理
 
 ```

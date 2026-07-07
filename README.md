@@ -100,6 +100,14 @@ JD); walled aggregators like LinkedIn need the full **Description** pasted. The
 **Advanced** panel in `output/ranking.html` gives you pre-filled LinkedIn / Indeed /
 Google searches to find these quickly.
 
+### ⏭️ Already have a target list? Skip sourcing entirely
+
+If you already know the jobs you want, you don't need the **map** and **source**
+steps at all. Just paste each posting into **`inbox/jobs.md`** (block format above),
+then run only **ingest → rank**. Every pasted job is scored against your résumé +
+preferences and gets its own **tailored résumé summary** — same output, without the
+company-finding steps.
+
 ## How it works
 
 ```
