@@ -43,6 +43,8 @@ runtime: copilot
 - **Blocked companies (never surface):**
 - **Hard filters (avoid):**
 - **Languages:**
+- **Max companies (cap the hunt):** 30
+- **Max roles per company:** 10
 
 ## Résumé
 

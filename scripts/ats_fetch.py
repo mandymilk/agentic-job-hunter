@@ -13,6 +13,7 @@ CLI:
     # register matched roles straight into the registry (idempotent,
     # collision-safe ids; keeps first_seen; re-runs never duplicate):
     python scripts/ats_fetch.py greenhouse stripe --senior --save --company Stripe
+    python scripts/ats_fetch.py greenhouse stripe --senior --save --limit 10
     python scripts/ats_fetch.py greenhouse stripe --json   # machine-readable
 
 Compliance: only official public ATS endpoints. Track-only; never auto-apply.
@@ -148,12 +149,17 @@ def main(argv):
     as_json = "--json" in rest
 
     company = None
+    limit = None
     pos = []
     i = 0
     while i < len(rest):
         a = rest[i]
         if a == "--company":
             company = rest[i + 1] if i + 1 < len(rest) else None
+            i += 2
+            continue
+        if a == "--limit":
+            limit = int(rest[i + 1]) if i + 1 < len(rest) and rest[i + 1].isdigit() else None
             i += 2
             continue
         if not a.startswith("--"):
@@ -163,6 +169,8 @@ def main(argv):
     jobs = FETCHERS[kind](*pos)
     if senior_only:
         jobs = [j for j in jobs if is_senior(j["title"])]
+    if limit:
+        jobs = jobs[:limit]
 
     if as_json:
         print(json.dumps(jobs, ensure_ascii=False, indent=2))

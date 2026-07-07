@@ -35,6 +35,8 @@ runtime: copilot
 - **Blocked companies (never surface):**
 - **Hard filters (avoid):** hands-on-only IC engineering; pure research
 - **Languages:** English (fluent)
+- **Max companies (cap the hunt):** 30
+- **Max roles per company:** 10
 
 ## Résumé
 

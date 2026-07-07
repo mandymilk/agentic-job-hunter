@@ -28,7 +28,7 @@ import ats_fetch  # noqa: E402
 import build_html  # noqa: E402
 import make_search_links  # noqa: E402
 import score as score_mod  # noqa: E402
-from lib import load_input, read, register_job, write  # noqa: E402
+from lib import (limits, load_input, read, register_job, write)  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -78,6 +78,7 @@ COMPANIES_HEADER = read(os.path.join(ROOT, "data", "companies.md")).split("| com
 
 def _api_map(inp):
     """Ask the model for a reputable target-company list with public ATS slugs."""
+    cap = limits(ROOT)["max_companies"]
     sys_msg = (
         "You map a candidate to reputable target companies to source jobs from. "
         "Only public/well-known companies or startups funded by famous investors. "
@@ -86,21 +87,23 @@ def _api_map(inp):
         "'smartrecruiters:<slug>', or 'workday:<tenant>:<site>'. If unknown, use "
         "tier 'walled'. Return STRICT JSON: {\"companies\":[{\"company\":str,"
         "\"tier\":\"ats\"|\"walled\",\"source\":str,\"fit\":str,\"url\":str}]} "
-        "with 12-24 companies. Prefer the candidate's seed/preferred companies.")
+        f"with up to {cap} companies. Prefer the candidate's seed/preferred companies.")
     user = f"PREFERENCES:\n{inp['preferences']}\n\nRESUME:\n{inp['resume']}"
     data = json.loads(_chat([{"role": "system", "content": sys_msg},
                              {"role": "user", "content": user}]))
+    companies = data.get("companies", [])[:cap]
     rows = ["| company | tier | source | fit (why it matches you) | url | status |",
             "|---------|------|--------|--------------------------|-----|--------|"]
-    for c in data.get("companies", []):
+    for c in companies:
         rows.append(f"| {c.get('company','')} | {c.get('tier','walled')} | "
                     f"{c.get('source','')} | {c.get('fit','')} | {c.get('url','')} | pending |")
     write(os.path.join(ROOT, "data", "companies.md"), COMPANIES_HEADER + "\n".join(rows) + "\n")
-    print(f"  map: wrote {len(data.get('companies', []))} companies")
+    print(f"  map: wrote {len(companies)} companies (cap {cap})")
 
 
 def _api_source():
     """Source ATS companies straight into the registry (idempotent)."""
+    max_roles = limits(ROOT)["max_roles_per_company"]
     path = os.path.join(ROOT, "data", "companies.md")
     lines = read(path).splitlines()
     scraped = 0
@@ -122,6 +125,8 @@ def _api_source():
             continue
         n = 0
         for j in jobs:
+            if n >= max_roles:
+                break
             if not (j.get("description") or "").strip():
                 continue
             register_job(ROOT, company, j["title"], j["location"], j["url"],
@@ -131,7 +136,7 @@ def _api_source():
         scraped += n
         print(f"  source: {company} → {n} roles")
     write(path, "\n".join(lines) + "\n")
-    print(f"  source: {scraped} roles registered total")
+    print(f"  source: {scraped} roles registered total (cap {max_roles}/company)")
 
 
 def _api_ingest():

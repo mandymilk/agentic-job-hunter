@@ -69,6 +69,9 @@ LinkedIn / Indeed / Google 搜索链接。
 - **每家公司都有可读来源** —— 每一行都标注了 `tier`
   （`ats` · `browser` · `walled` · `manual`）和 `source`（如 `greenhouse:stripe`），
   让 source 步骤清楚知道该如何读取。
+- **可控的运行时长** —— 在偏好中设置 **`Max companies`** 和 **`Max roles per company`**，
+  可以限制抓取和打分的数量（默认分别为 30 和 10）。这对 `api` 运行方式尤其重要，
+  因为每个职位都会消耗一次打分调用。
 
 你可以随意编辑 `data/companies.md` 来调整方向，然后重新运行 `source` → `rank`。
 

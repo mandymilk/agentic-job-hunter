@@ -75,6 +75,9 @@ in `data/companies.md`:
 - **A readable source per company** — each row is tagged with a `tier`
   (`ats` · `browser` · `walled` · `manual`) and a `source` (e.g. `greenhouse:stripe`)
   so sourcing knows exactly how to read it.
+- **Bounded runtime** — set **`Max companies`** and **`Max roles per company`** in
+  your preferences to cap how much gets sourced and scored (defaults: 30 and 10).
+  This matters most for the `api` runtime, where each job costs one scoring call.
 
 Edit `data/companies.md` freely to steer the hunt, then re-run `source` → `rank`.
 

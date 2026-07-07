@@ -29,4 +29,5 @@ Rules:
    - You may verify an ATS slug quickly with `scripts/ats_fetch.py <kind> <slug>`.
 4. Set `status` to `pending` for all new rows.
 
-Aim for ~20–40 well-chosen companies. Summarize the list and the tier breakdown.
+Honor **Max companies** from the Preferences (default ~30) to bound how long the
+hunt runs. Summarize the list and the tier breakdown.

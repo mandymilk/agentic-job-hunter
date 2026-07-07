@@ -16,7 +16,9 @@ For each company, by `tier`:
   (disambiguating same-title roles by location), keeps each job's original
   `first_seen`, updates a detail file + `jd_hash` only when the JD actually
   changed, skips postings with no JD text, and never creates duplicate rows on
-  re-runs. Set the company `status` to `scraped:<N>` or `no-matches`.
+  re-runs. To bound runtime, keep at most **Max roles per company** (default ~10)
+  per board — pass `--limit <N>` to cap what gets registered. Set the company
+  `status` to `scraped:<N>` or `no-matches`.
 - **browser** — try `scripts/browser_fetch.py`: `render <url>` for DOM-readable
   boards, or `api <url> <api-substring>` to read the page's own jobs API. Parse
   the matching senior roles and register them (see below). If nothing readable,

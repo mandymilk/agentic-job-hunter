@@ -106,6 +106,22 @@ def profile_hash(root):
     return sha1_8(d["resume"] + "\n\n[PREFERENCES]\n" + d["preferences"])
 
 
+def _int_after(label, text, default):
+    m = re.search(rf"{label}[^\d]*(\d+)", text, re.I)
+    return int(m.group(1)) if m else default
+
+
+def limits(root):
+    """Optional run caps from Preferences (to bound runtime/cost), with defaults.
+    - max_companies: how many companies to target/source.
+    - max_roles_per_company: how many senior roles to register per company."""
+    prefs = preferences_text(root)
+    return {
+        "max_companies": _int_after(r"Max companies", prefs, 30),
+        "max_roles_per_company": _int_after(r"Max roles per company", prefs, 10),
+    }
+
+
 # --- Manual search links (LinkedIn / Indeed / Google) --------------------
 # Shared by make_search_links.py and the Advanced panel in build_html.py.
 
