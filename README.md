@@ -1,5 +1,7 @@
 # agentic-job-hunter
 
+**English** · [简体中文](README.zh-CN.md)
+
 Turn your résumé into a **ranked, clickable shortlist of jobs** from reputable
 companies — with ready-to-click search links for everything we can't auto-source.
 
