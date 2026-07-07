@@ -20,12 +20,14 @@ def sha1_8(text: str) -> str:
 def strip_html(h: str) -> str:
     if not h:
         return ""
+    h = _html.unescape(h)  # decode entities first so escaped tags become real tags
+    h = h.replace("\u00a0", " ").replace("&nbsp;", " ")  # some boards double-escape
     h = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", h, flags=re.S | re.I)
     h = re.sub(r"<br\s*/?>", "\n", h, flags=re.I)
     h = re.sub(r"</(p|li|div|h[1-6])>", "\n", h, flags=re.I)
     h = re.sub(r"<li[^>]*>", "- ", h, flags=re.I)
     h = re.sub(r"<[^>]+>", "", h)
-    return re.sub(r"\n{3,}", "\n\n", _html.unescape(h)).strip()
+    return re.sub(r"\n{3,}", "\n\n", h).strip()
 
 
 SENIOR_RE = re.compile(
@@ -184,10 +186,15 @@ def parse_index(root):
             header.append(line)
     return header, rows
 
+def _cell(v):
+    """Make a value safe for a markdown table cell (no pipes/newlines)."""
+    return re.sub(r"\s+", " ", str(v if v is not None else "").replace("|", "/")).strip()
+
 
 def _row_line(r):
-    return (f"| {r['id']} | {r['company']} | {r['title']} | {r['location']} | "
-            f"{r['url']} | {r['jd_hash']} | {r['first_seen']} | {r['status']} |")
+    return ("| " + " | ".join(_cell(r[k]) for k in
+            ("id", "company", "title", "location", "url", "jd_hash",
+             "first_seen", "status")) + " |")
 
 
 def _unique_id(base, location, taken):
