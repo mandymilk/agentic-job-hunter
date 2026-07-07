@@ -70,6 +70,11 @@ preferences) changed — otherwise reuse its result.
 - `data/jobs/details/<id>.md`: frontmatter + `## Description` + full JD text.
 - `data/results/<id>.md`: header `- score: N/100`, `- jd_hash:`, `- resume_hash:`,
   `- evaluated:` then `**Why:** **Matched:** **Gaps:** **Tailored summary:**`.
+  `Why`/`Matched`/`Gaps` explain the match. **Tailored summary** is different: it is a
+  ready-to-paste **résumé Summary/Profile paragraph** (3–5 sentences) the candidate can
+  drop into the top of their résumé when applying to *this* role — written in their
+  professional voice, foregrounding the most role-relevant real experience, using ONLY
+  facts from the résumé (never invented, not a justification of the score).
 - `id = slug(company)-slug(title)`; `jd_hash = first 8 of sha1(detail file)`.
 
 ## Running scripts

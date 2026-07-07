@@ -35,7 +35,10 @@ name the specific JD requirements the candidate does and doesn't meet. Write
 **Why:** <1–2 sentences>
 **Matched:** <skills the candidate genuinely has>
 **Gaps:** <or "none obvious">
-**Tailored summary:** <3–5 sentence pitch — never invent experience>
+**Tailored summary:** <3–5 sentence résumé Summary/Profile paragraph the candidate
+can paste into the top of their résumé for THIS role — written in their professional
+voice, foregrounding the most role-relevant real experience, using only résumé facts;
+NOT an explanation of why they match>
 ```
 
 (Alternatively, run `python scripts/score.py` if `OPENAI_API_KEY` is set.)

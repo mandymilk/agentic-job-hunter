@@ -43,8 +43,12 @@ RUBRIC = (
     "PREFERENCES; judge requirements/seniority against the RESUME. Be honest — weak fits "
     "must score low. Never invent experience the candidate does not have. In 'matched' and "
     "'gaps', name the specific JD requirements met and missing. "
+    "The 'summary' is NOT an explanation of the match: it is a ready-to-paste resume "
+    "Summary/Profile paragraph (3-5 sentences) the candidate can drop into the top of "
+    "their resume for THIS role, written in their professional voice, foregrounding the "
+    "most role-relevant real experience, using ONLY facts from the resume (never invented). "
     "Return STRICT JSON: {\"score\":int, \"why\":str, \"matched\":str, \"gaps\":str, "
-    "\"summary\":str} where summary is a 3-5 sentence tailored pitch."
+    "\"summary\":str}."
 )
 
 
