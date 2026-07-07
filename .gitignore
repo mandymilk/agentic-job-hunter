@@ -1,0 +1,17 @@
+# Keep your résumé and generated data private by default.
+inbox/input.md
+inbox/jobs.md
+data/jobs/details/*.md
+data/results/*.md
+data/manual-search-links.md
+output/ranking.html
+output/ranking.md
+
+# Keep the folders tracked
+!data/jobs/details/.gitkeep
+!data/results/.gitkeep
+
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

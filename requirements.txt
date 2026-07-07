@@ -1,0 +1,4 @@
+# Core scripts use only the Python standard library — no install needed.
+# Optional: the advanced JS/DOM scraper (scripts/browser_fetch.py) needs Playwright:
+#   pip install playwright && playwright install chromium
+playwright>=1.40 ; extra == "browser"
