@@ -42,6 +42,58 @@ Google searches.
 The **approach is identical** everywhere — the same 4-step flow (map → source →
 ingest → rank). Only the driver differs.
 
+## Your flow, step by step
+
+1. **Set up** — in `inbox/input.md`: choose a `runtime`, fill in **Preferences**,
+   and paste your **résumé** below the marker.
+2. **map** — the agent builds a *strategic* target-company list → `data/companies.md`
+   (see the strategy below).
+3. **source** — reads each company's **public ATS** and registers the senior roles
+   that fit; for boards it can't read, it generates ready-to-click search links.
+4. **ingest** *(optional)* — normalizes any jobs you pasted into `inbox/jobs.md`
+   (e.g. from LinkedIn/Indeed — see below).
+5. **rank** — scores every job against *your* résumé and builds
+   **`output/ranking.html`**.
+6. **review & iterate** — open the HTML, sort/filter, click a row for the full
+   evaluation + JD, and use the **Advanced** panel to search other boards. Paste
+   more jobs or tweak preferences and re-run — only what changed is re-scored.
+
+### 🎯 The target-company list is a *strategy*, not a scrape
+
+The **map** step doesn't dump random companies — it builds a deliberate shortlist
+in `data/companies.md`:
+
+- **Reputability bar** — only public/well-known companies, or startups recently
+  backed by a top-tier investor (a16z, Sequoia, Benchmark, Accel, Lightspeed,
+  Tiger, Index, GV…). No obscure names.
+- **Fit to *you*** — matched to your résumé + preferences (industries, role
+  archetypes, locations). It always includes your **preferred/seed companies** and
+  never surfaces your **blocked** ones.
+- **A readable source per company** — each row is tagged with a `tier`
+  (`ats` · `browser` · `walled` · `manual`) and a `source` (e.g. `greenhouse:stripe`)
+  so sourcing knows exactly how to read it.
+
+Edit `data/companies.md` freely to steer the hunt, then re-run `source` → `rank`.
+
+### 📋 Found a job on LinkedIn / Indeed? Paste it and it still gets scored
+
+We never scrape LinkedIn/Indeed/aggregators — but you can bring any job to the
+matcher yourself. Open **`inbox/jobs.md`**, paste the posting, and run **ingest**
+(the `api` runtime does this automatically). It's then scored against your résumé
+and ranked right alongside the auto-sourced roles, with the same honest rubric.
+
+```
+## Job
+URL: https://www.linkedin.com/jobs/view/1234567890
+Description: <paste the full job description here>
+---
+```
+
+Tip: URL-only is fine for a scrapeable company career page (ingest will fetch the
+JD); walled aggregators like LinkedIn need the full **Description** pasted. The
+**Advanced** panel in `output/ranking.html` gives you pre-filled LinkedIn / Indeed /
+Google searches to find these quickly.
+
 ## How it works
 
 ```

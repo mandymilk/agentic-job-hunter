@@ -41,6 +41,52 @@ LinkedIn / Indeed / Google 搜索链接。
 无论用哪种方式，**流程完全相同** —— 都是同样的 4 步（map → source → ingest → rank），
 区别只在于驱动它的工具不同。
 
+## 完整使用流程（分步）
+
+1. **准备** —— 在 `inbox/input.md` 中：选择 `runtime`、填写 **Preferences（偏好）**，
+   并在标记行下方粘贴你的**简历**。
+2. **map** —— agent 会构建一份*有策略的*目标公司清单 → `data/companies.md`
+   （策略见下文）。
+3. **source** —— 读取每家公司的**公开 ATS**，登记符合条件的高级职位；对于无法读取的
+   招聘板，则生成可直接点击的搜索链接。
+4. **ingest**（可选）—— 规整你粘贴进 `inbox/jobs.md` 的职位（例如来自
+   LinkedIn/Indeed —— 见下文）。
+5. **rank** —— 对照*你自己的*简历给每个职位打分，并生成 **`output/ranking.html`**。
+6. **查看并迭代** —— 打开该 HTML，排序/筛选，点击某行查看完整评估 + 职位描述，
+   并用 **Advanced（高级）** 面板去其他招聘站搜索。粘贴更多职位或调整偏好后重新运行，
+   只有发生变化的内容才会被重新打分。
+
+### 🎯 目标公司清单是一种*策略*，而非随意抓取
+
+**map** 这一步不会堆砌无关公司，而是在 `data/companies.md` 中构建一份精心筛选的清单：
+
+- **信誉门槛** —— 只收录上市/知名公司，或近期获得顶级投资方（a16z、Sequoia、
+  Benchmark、Accel、Lightspeed、Tiger、Index、GV 等）投资的初创公司，不收录默默无闻的公司。
+- **契合*你自己*** —— 依据你的简历 + 偏好（行业、职位类型、地点）来匹配；始终包含你的
+  **preferred/seed（优先/种子）公司**，绝不出现你**屏蔽**的公司。
+- **每家公司都有可读来源** —— 每一行都标注了 `tier`
+  （`ats` · `browser` · `walled` · `manual`）和 `source`（如 `greenhouse:stripe`），
+  让 source 步骤清楚知道该如何读取。
+
+你可以随意编辑 `data/companies.md` 来调整方向，然后重新运行 `source` → `rank`。
+
+### 📋 在 LinkedIn / Indeed 上看到心仪职位？粘贴进来，一样会被打分
+
+我们绝不抓取 LinkedIn/Indeed/聚合站点 —— 但你可以自己把任意职位交给匹配器。打开
+**`inbox/jobs.md`**，粘贴职位内容，然后运行 **ingest**（`api` 运行方式会自动完成）。
+它会像自动抓取的职位一样，用同一套诚实的评分标准对照你的简历打分并排名。
+
+```
+## Job
+URL: https://www.linkedin.com/jobs/view/1234567890
+Description: <把完整的职位描述粘贴到这里>
+---
+```
+
+小贴士：如果是可抓取的公司招聘页，只填 URL 即可（ingest 会自动抓取 JD）；而
+LinkedIn 等受限聚合站点则需要粘贴完整的 **Description**。`output/ranking.html` 中的
+**Advanced** 面板提供了预填的 LinkedIn / Indeed / Google 搜索链接，方便你快速找到这些职位。
+
 ## 工作原理
 
 ```
