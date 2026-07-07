@@ -122,14 +122,13 @@ footer{padding:16px 24px;color:var(--mut);font-size:12px;border-top:1px solid va
 <div class="controls">
   <input id="q" placeholder="Search title, company, location…">
   <select id="loc"><option value="">All locations</option></select>
-  <select id="status"><option value="">All statuses</option></select>
   <select id="min"><option value="0">Any score</option><option value="80">80+</option>
     <option value="70">70+</option><option value="60">60+</option></select>
   <span id="count" class="pill"></span>
 </div>
 <table id="t"><thead><tr>
   <th data-k="rank">#</th><th data-k="score">Score</th><th data-k="title">Role</th>
-  <th data-k="company">Company</th><th data-k="location">Location</th><th data-k="status">Status</th>
+  <th data-k="company">Company</th><th data-k="location">Location</th>
 </tr></thead><tbody></tbody></table>
 <section class="adv"><details>
   <summary>Advanced — search LinkedIn / Indeed / Google directly</summary>
@@ -144,10 +143,10 @@ function esc(x){return (x||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':
 let sortK='score', sortDir=-1;
 function fill(){
   const q=document.getElementById('q').value.toLowerCase();
-  const loc=document.getElementById('loc').value, st=document.getElementById('status').value;
+  const loc=document.getElementById('loc').value;
   const mn=+document.getElementById('min').value;
   let rows=JOBS.filter(j=>j.score>=mn
-    && (!loc||j.location===loc) && (!st||j.status===st)
+    && (!loc||j.location===loc)
     && (!q||(j.title+j.company+j.location).toLowerCase().includes(q)));
   rows.sort((a,b)=>{const x=a[sortK],y=b[sortK];return ((x>y)-(x<y))*sortDir});
   tb.innerHTML='';
@@ -156,9 +155,9 @@ function fill(){
     tr.innerHTML=`<td>${i+1}</td>
       <td><span class="badge" style="background:${color(j.score)}">${j.score}</span></td>
       <td>${esc(j.title)}</td><td>${esc(j.company)}</td>
-      <td>${esc(j.location)}</td><td><span class="pill">${esc(j.status)}</span></td>`;
+      <td>${esc(j.location)}</td>`;
     const det=document.createElement('tr');det.className='detail hidden';
-    det.innerHTML=`<td colspan="6">
+    det.innerHTML=`<td colspan="5">
       ${j.url?`<a class="apply" href="${j.url}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
       ${blk('Why',j.why)}${blk('Matched',j.matched)}${blk('Gaps',j.gaps)}${blk('Tailored summary',j.summary)}
       ${j.jd?`<div class="lab">Full JD</div><div class="jd">${esc(j.jd)}</div>`:''}</td>`;
@@ -170,10 +169,10 @@ function fill(){
 function blk(l,v){return v?`<div class="blk"><div class="lab">${l}</div><div>${esc(v)}</div></div>`:''}
 function opts(id,vals){const s=document.getElementById(id);[...new Set(vals)].filter(Boolean).sort()
   .forEach(v=>{const o=document.createElement('option');o.value=o.textContent=v;s.appendChild(o)})}
-opts('loc',JOBS.map(j=>j.location));opts('status',JOBS.map(j=>j.status));
+opts('loc',JOBS.map(j=>j.location));
 document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;
   if(k==='rank')return; sortDir=(sortK===k)?-sortDir:-1; sortK=k; fill();});
-['q','loc','status','min'].forEach(id=>document.getElementById(id).oninput=fill);
+['q','loc','min'].forEach(id=>document.getElementById(id).oninput=fill);
 fill();
 </script></body></html>"""
 

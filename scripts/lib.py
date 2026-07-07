@@ -99,6 +99,13 @@ def preferences_text(root):
     return load_input(root)["preferences"]
 
 
+def profile_hash(root):
+    """Hash of the whole candidate profile (résumé + preferences). Scoring uses
+    both, so this is what decides whether a job needs re-scoring."""
+    d = load_input(root)
+    return sha1_8(d["resume"] + "\n\n[PREFERENCES]\n" + d["preferences"])
+
+
 # --- Manual search links (LinkedIn / Indeed / Google) --------------------
 # Shared by make_search_links.py and the Advanced panel in build_html.py.
 

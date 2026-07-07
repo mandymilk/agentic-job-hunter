@@ -19,7 +19,8 @@ import re
 import sys
 import urllib.request
 
-from lib import read, resume_hash, resume_text, sha1_8, write
+from lib import (preferences_text, profile_hash, read, resume_text, sha1_8,
+                 write)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DETAILS = os.path.join(ROOT, "data", "jobs", "details")
@@ -29,15 +30,17 @@ TODAY = __import__("datetime").date.today().isoformat()
 RUBRIC = (
     "You are an expert technical recruiter. Score the fit of ONE job for THIS candidate "
     "from 0-100 using, in priority order: genuine skills/tech overlap (no superficial keyword "
-    "matches) > seniority & scope > location & work mode > salary if stated. Be honest — weak "
-    "fits must score low. Never invent experience the candidate does not have. "
+    "matches) > seniority & scope > location & work mode > salary if stated. Judge location, "
+    "work mode and salary against the candidate's stated PREFERENCES; judge skills and "
+    "seniority against their RESUME. Be honest — weak fits must score low. Never invent "
+    "experience the candidate does not have. "
     "Return STRICT JSON: {\"score\":int, \"why\":str, \"matched\":str, \"gaps\":str, "
     "\"summary\":str} where summary is a 3-5 sentence tailored pitch."
 )
 
 
 def needs_scoring():
-    rh = resume_hash(ROOT)
+    rh = profile_hash(ROOT)
     todo = []
     for p in glob.glob(os.path.join(DETAILS, "*.md")):
         jid = os.path.splitext(os.path.basename(p))[0]
@@ -51,7 +54,7 @@ def needs_scoring():
     return rh, todo
 
 
-def call_openai(resume, jd):
+def call_openai(resume, jd, preferences):
     key = os.environ["OPENAI_API_KEY"]
     model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
     base = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
@@ -59,7 +62,8 @@ def call_openai(resume, jd):
         "model": model,
         "messages": [
             {"role": "system", "content": RUBRIC},
-            {"role": "user", "content": f"CANDIDATE RESUME:\n{resume}\n\nJOB:\n{jd}"},
+            {"role": "user", "content": f"CANDIDATE PREFERENCES:\n{preferences}\n\n"
+                                        f"CANDIDATE RESUME:\n{resume}\n\nJOB:\n{jd}"},
         ],
         "temperature": 0.2,
         "response_format": {"type": "json_object"},
@@ -94,9 +98,10 @@ def main(argv):
         print("Use the Copilot agent (/rank) to score them, or export OPENAI_API_KEY.")
         return 0
     resume = resume_text(ROOT)
+    preferences = preferences_text(ROOT)
     for jid, path, jd_hash in todo:
         try:
-            e = call_openai(resume, read(path))
+            e = call_openai(resume, read(path), preferences)
             write_result(jid, jd_hash, rh, e)
             print(f"  scored {jid}: {e['score']}")
         except Exception as ex:  # noqa

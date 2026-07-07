@@ -19,10 +19,13 @@ end to end. The user picks how to run in `inbox/input.md` (`runtime:` =
 copilot | claude | codex | api); `python scripts/run.py` routes accordingly.
 
 ## Scoring rubric (be honest)
-Priority order: **genuine skills/tech overlap** (no superficial keyword matches) >
-**seniority & scope** > **location & work mode** > **salary if stated**. Weak fits
-must score low. Never invent experience the candidate lacks. Re-score a job only
-when its `jd_hash` or the `resume_hash` changed — otherwise reuse its result.
+Score each job against the candidate's **résumé + preferences** (both from
+`inbox/input.md`). Priority order: **genuine skills/tech overlap** (no superficial
+keyword matches) > **seniority & scope** > **location & work mode** > **salary if
+stated**. Judge skills/seniority against the résumé; judge location/work-mode/salary
+against the preferences. Weak fits must score low. Never invent experience the
+candidate lacks. Re-score a job only when its `jd_hash` or the `resume_hash`
+(profile hash = résumé + preferences) changed — otherwise reuse its result.
 
 ## Compliance
 - Read only companies' **own** career sites and **public ATS** boards
