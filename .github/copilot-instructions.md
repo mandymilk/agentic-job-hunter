@@ -27,12 +27,32 @@ copilot | claude | codex | api); `python scripts/run.py` routes accordingly.
 
 ## Scoring rubric (be honest)
 Score each job against the candidate's **résumé + preferences** (both from
-`inbox/input.md`). Priority order: **genuine skills/tech overlap** (no superficial
-keyword matches) > **seniority & scope** > **location & work mode** > **salary if
-stated**. Judge skills/seniority against the résumé; judge location/work-mode/salary
-against the preferences. Weak fits must score low. Never invent experience the
-candidate lacks. Re-score a job only when its `jd_hash` or the `resume_hash`
-(profile hash = résumé + preferences) changed — otherwise reuse its result.
+`inbox/input.md`). Priority order: **genuine fit to the JD's actual requirements**
+(no superficial keyword matches) > **seniority & scope** > **location & work mode**
+> **salary if stated**. Judge requirements/seniority against the résumé; judge
+location/work-mode/salary against the preferences.
+
+**Match the JD's stated requirements, not just tech skills — especially for senior
+roles.** Read what the JD actually asks for (kinds of experience, scope, outcomes)
+and check the résumé for concrete evidence of *each*. Reward demonstrated
+experiences the role calls for; penalize missing ones even when keywords overlap.
+In **Matched**/**Gaps**, name the specific JD requirements the candidate does and
+doesn't meet. Examples:
+- JD wants **0→1 / built-from-scratch** experience → the résumé must show a product
+  launched from nothing (e.g. "shipped a 0→1 loyalty program"), not just relevant
+  tech skills.
+- JD wants to **manage a team of PMs** → require real people-management, not just
+  "cross-functional leadership."
+- JD wants **scale** (e.g. 1M→10M users, high-volume systems) → require comparable
+  scale in the résumé.
+- JD wants **domain depth** (e.g. payments/fintech, marketplace) → require real
+  work in that domain, not a generic background.
+- JD wants **ambiguity / strategy ownership** → require evidence of setting
+  strategy and roadmap, not only execution.
+
+Weak fits must score low. Never invent experience the candidate lacks. Re-score a
+job only when its `jd_hash` or the `resume_hash` (profile hash = résumé +
+preferences) changed — otherwise reuse its result.
 
 ## Compliance
 - Read only companies' **own** career sites and **public ATS** boards

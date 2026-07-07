@@ -6,9 +6,11 @@ Turn your résumé into a **ranked, clickable shortlist of jobs** from reputable
 companies — with ready-to-click search links for everything we can't auto-source.
 
 - **No-code:** paste a résumé, run the agent, open an HTML file.
-- **Honest matching:** scored against *your* résumé **and your preferences** —
-  weighing skills first, then seniority, location, and salary. Weak fits rank low,
-  and only what changed gets re-scored.
+- **Honest matching:** scored against *your* résumé **and your preferences** — it
+  matches the JD's **actual requirements**, not just tech keywords (e.g. a *"0→1
+  launch"* ask is checked against whether you've built something from scratch; a
+  *"manage a team of PMs"* ask against real people-management), then seniority,
+  location, and salary. Weak fits rank low, and only what changed gets re-scored.
 - **Compliant & track-only:** reads companies' own career sites and public ATS
   boards; generates search links for LinkedIn/Indeed instead of scraping them.
   **Never auto-applies.**

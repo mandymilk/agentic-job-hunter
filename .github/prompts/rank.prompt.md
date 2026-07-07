@@ -14,10 +14,15 @@ result, or the current `resume_hash` differs from the one in its result.
 Otherwise **reuse** the existing result.
 
 For each job needing evaluation, read `data/jobs/details/<id>.md` and judge fit
-using the rubric in `.github/copilot-instructions.md`: weigh genuine skills
-overlap first, then seniority, then location & work mode, then salary. Judge
-**skills/seniority against the résumé** and **location/work-mode/salary against the
-Preferences**. Write `data/results/<id>.md`:
+using the rubric in `.github/copilot-instructions.md`: weigh **genuine fit to the
+JD's actual requirements** first — match *each* requirement the JD states (e.g.
+0→1 / built-from-scratch launch, managing a team of PMs, scale like 1M→10M users,
+domain depth like payments/fintech, ambiguity/strategy ownership) against concrete
+evidence in the résumé, not just tech keywords — then seniority, then location &
+work mode, then salary. Judge **requirements/seniority against the résumé** and
+**location/work-mode/salary against the Preferences**. In **Matched**/**Gaps**,
+name the specific JD requirements the candidate does and doesn't meet. Write
+`data/results/<id>.md`:
 
 ```
 # <id>
