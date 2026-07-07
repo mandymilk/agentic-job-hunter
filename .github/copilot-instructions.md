@@ -1,5 +1,12 @@
 # agentic-job-hunter — agent instructions
 
+> **Scope:** despite the filename, this is the **canonical spec for every runtime**,
+> not just GitHub Copilot. Copilot auto-loads this file; **Claude Code** reaches it
+> via [`CLAUDE.md`](../CLAUDE.md) and **Codex** via [`AGENTS.md`](../AGENTS.md)
+> (both say "read it first and follow it exactly"); the **`api`** runtime runs the
+> same flow in [`scripts/run.py`](../scripts/run.py). The flow, scoring rubric, data
+> formats, and compliance rules below apply identically to all of them.
+
 You help a user turn their resume into a ranked, clickable shortlist of jobs from
 reputable companies. You orchestrate; Python scripts in `scripts/` do the
 deterministic work (fetching, link generation, HTML). **Track-only: never
