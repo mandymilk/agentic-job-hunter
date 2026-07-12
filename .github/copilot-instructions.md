@@ -15,7 +15,9 @@ auto-apply, never suggest auto-applying.**
 ## The flow (4 steps)
 1. **map** — read `inbox/input.md` (Preferences section + the résumé pasted below
    the marker) → write the target company list (`data/companies.md`) with a
-   `tier` + `source` per company.
+   `tier` + `source` per company. **Refresh-merge on every run:** keep existing
+   rows (preserving manual edits + each company's scrape `status`), add newly-found
+   reputable companies as `pending`, drop blocked ones — never wipe curation.
 2. **source** — pull jobs from readable boards into the registry; generate
    `data/manual-search-links.md` for the rest.
 3. **ingest** — normalize any jobs the user pasted into `inbox/jobs.md`.
@@ -60,8 +62,12 @@ preferences) changed — otherwise reuse its result.
 - For JS/DOM or page-fetched-API boards, `scripts/browser_fetch.py` (optional,
   Playwright) may render or capture the page's own API response — never forge
   signed requests, never bypass Cloudflare/DataDome challenges.
-- **Never** scrape LinkedIn/Indeed/aggregators — generate search links instead
-  (`scripts/make_search_links.py`).
+- LinkedIn is sourced **for personal use only** via `scripts/linkedin_source.py`
+  (a thin wrapper over the vendored `tools/linkedin-cli/`, needs `bun`), which
+  reads LinkedIn's **public jobs-guest** board. Automated access is against
+  LinkedIn's ToS — keep volume low and non-commercial; the script self-skips if
+  `bun` is absent. For Indeed/other aggregators, still **generate search links**
+  instead (`scripts/make_search_links.py`).
 - Never fabricate a JD. If you cannot read the real text, flag the company `walled`
   and rely on manual paste.
 
@@ -79,4 +85,5 @@ preferences) changed — otherwise reuse its result.
 
 ## Running scripts
 `cd` to the repo root and run e.g. `python scripts/ats_fetch.py greenhouse stripe --senior`,
-`python scripts/make_search_links.py`, `python scripts/build_html.py`.
+`python scripts/linkedin_source.py`, `python scripts/make_search_links.py`,
+`python scripts/build_html.py`.

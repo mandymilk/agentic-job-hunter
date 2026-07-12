@@ -12,6 +12,13 @@ header; one row per company):
 
 `| company | tier | source | fit (why it matches you) | url | status |`
 
+**Refresh on every run (merge, don't overwrite).** If `data/companies.md` already
+has rows, keep them — preserve any manual edits the user made and each company's
+existing `status` (so already-scraped companies aren't reset) — then **add**
+newly-found reputable companies as new `pending` rows, and **remove** any company
+now in **Blocked companies**. Re-running map should grow/refresh the list, never
+wipe curation.
+
 Rules:
 1. **Reputability bar** — only public companies, well-known/established companies,
    or startups that recently raised from a famous investor (a16z, Sequoia,
@@ -27,7 +34,8 @@ Rules:
      page-fetched API; `walled` if bot-protected (Cloudflare/DataDome/signed);
      `manual` if you can't find an official source.
    - You may verify an ATS slug quickly with `scripts/ats_fetch.py <kind> <slug>`.
-4. Set `status` to `pending` for all new rows.
+4. Set `status` to `pending` for **new** rows only; leave existing rows' status
+   untouched.
 
 Honor **Max companies** from the Preferences (default ~30) to bound how long the
 hunt runs. Summarize the list and the tier breakdown.

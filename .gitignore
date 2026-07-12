@@ -17,3 +17,6 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
+
+# Vendored LinkedIn CLI: commit the source, not installed deps
+tools/linkedin-cli/node_modules/

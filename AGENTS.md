@@ -16,8 +16,10 @@ and follow it exactly. **Track-only: never auto-apply, never suggest it.**
    detailed prompt in `.github/prompts/`:
    - **map** → `.github/prompts/map.prompt.md` → writes `data/companies.md`.
    - **source** → `.github/prompts/source.prompt.md` → registers jobs with
-     `python scripts/ats_fetch.py <kind> <slug> --senior --save --company "<Company>"`
-     and generates search links with `python scripts/make_search_links.py`.
+     `python scripts/ats_fetch.py <kind> <slug> --senior --save --company "<Company>"`,
+     sources LinkedIn's public board with `python scripts/linkedin_source.py`
+     (personal-use; skips if `bun` is missing), and generates search links with
+     `python scripts/make_search_links.py`.
    - **ingest** → `.github/prompts/ingest.prompt.md` → only if `inbox/jobs.md`
      has pasted jobs.
    - **rank** → `.github/prompts/rank.prompt.md` → score each job against the
@@ -30,10 +32,12 @@ and follow it exactly. **Track-only: never auto-apply, never suggest it.**
 | script | purpose |
 |--------|---------|
 | `scripts/ats_fetch.py` | read Greenhouse/Lever/Ashby/SmartRecruiters/Workday; `--save` registers roles |
+| `scripts/linkedin_source.py` | source LinkedIn's public jobs-guest board (personal-use; needs `bun`) |
 | `scripts/make_search_links.py` | build LinkedIn/Indeed/Google search links from preferences |
 | `scripts/build_html.py` | build `output/ranking.html` |
 | `scripts/run.py` | headless runner for the `api` runtime |
 
 Be honest about weak fits (skills > seniority > location > salary). Read only
-companies' own career sites / public ATS; never scrape LinkedIn/Indeed — generate
-search links instead.
+companies' own career sites / public ATS. LinkedIn is sourced for **personal use
+only** via `scripts/linkedin_source.py` (public jobs-guest board, needs `bun`);
+for Indeed/other aggregators generate search links instead.

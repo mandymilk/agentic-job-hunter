@@ -12,8 +12,9 @@ companies — with ready-to-click search links for everything we can't auto-sour
   *"manage a team of PMs"* ask against real people-management), then seniority,
   location, and salary. Weak fits rank low, and only what changed gets re-scored.
 - **Compliant & track-only:** reads companies' own career sites and public ATS
-  boards; generates search links for LinkedIn/Indeed instead of scraping them.
-  **Never auto-applies.**
+  boards, plus LinkedIn's public jobs-guest board for **personal use only** (needs
+  [`bun`](https://bun.sh)); generates search links for Indeed/other aggregators
+  instead of scraping them. **Never auto-applies.**
 
 ## Quickstart — you only do 2 things
 
@@ -127,6 +128,7 @@ The agent orchestrates; deterministic work is done by stdlib Python in `scripts/
 |--------|--------------|
 | `run.py` | single entrypoint — reads `runtime:` and routes (runs the flow for `api`) |
 | `ats_fetch.py` | read Greenhouse / Lever / Ashby / SmartRecruiters / Workday boards (`--save` registers roles) |
+| `linkedin_source.py` | source LinkedIn's **public jobs-guest** board (personal-use; needs [`bun`](https://bun.sh)) |
 | `make_search_links.py` | generate LinkedIn / Indeed / Google search links from prefs |
 | `browser_fetch.py` | *optional* Playwright helper for JS/DOM boards (`pip install playwright`) |
 | `score.py` | *optional* headless scoring with `OPENAI_API_KEY` (agent does this by default) |
@@ -137,6 +139,7 @@ Run any script from the repo root, e.g.:
 ```bash
 python scripts/run.py                         # route based on inbox/input.md
 python scripts/ats_fetch.py greenhouse stripe --senior --save --company Stripe
+python scripts/linkedin_source.py             # personal-use; needs bun
 python scripts/make_search_links.py
 python scripts/build_html.py
 ```
@@ -153,9 +156,14 @@ flow headlessly. To only re-score, run `python scripts/score.py` then
 
 ## Compliance & safety
 
-Reads only companies' **own** career sites and **public ATS** endpoints. Does **not**
-scrape LinkedIn/Indeed/aggregators or bypass anti-bot challenges — it generates
-search links for those. **Track-only:** nothing is ever auto-submitted. The optional
-`browser_fetch.py` is for company career sites only; you accept ToS/fragility risk.
+Reads companies' **own** career sites and **public ATS** endpoints. It does **not**
+bypass anti-bot challenges. **LinkedIn is the one deliberate exception:**
+`scripts/linkedin_source.py` reads LinkedIn's **public jobs-guest** board via the
+vendored `tools/linkedin-cli/` (needs [`bun`](https://bun.sh)) — this is
+**personal-use only**, since automated access is against LinkedIn's ToS, so keep
+volume low and non-commercial (it self-skips when `bun` is absent). For Indeed and
+other aggregators it still only generates **search links**. **Track-only:** nothing
+is ever auto-submitted. The optional `browser_fetch.py` is for company career sites
+only; you accept ToS/fragility risk.
 
 Your résumé stays local. MIT licensed — see [LICENSE](LICENSE).

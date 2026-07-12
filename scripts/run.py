@@ -26,11 +26,12 @@ import urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ats_fetch  # noqa: E402
 import build_html  # noqa: E402
+import linkedin_source  # noqa: E402
 import make_search_links  # noqa: E402
 import score as score_mod  # noqa: E402
 from lib import (limits, load_input, read, register_job, write)  # noqa: E402
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("AJH_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _placeholder_resume(resume):
@@ -76,6 +77,27 @@ COMPANIES_HEADER = read(os.path.join(ROOT, "data", "companies.md")).split("| com
     if os.path.exists(os.path.join(ROOT, "data", "companies.md")) else "# Target Company List\n\n"
 
 
+def _parse_companies(path):
+    """Data rows from companies.md as dicts (company/tier/source/fit/url/status)."""
+    rows = []
+    if not os.path.exists(path):
+        return rows
+    for line in read(path).splitlines():
+        c = [x.strip() for x in line.split("|")]
+        if len(c) >= 8 and c[1] not in ("company", "") and set(c[1]) != {"-"}:
+            rows.append({"company": c[1], "tier": c[2], "source": c[3],
+                         "fit": c[4], "url": c[5], "status": c[6]})
+    return rows
+
+
+def _blocked_companies(preferences):
+    """Lowercased set of blocked company names parsed from Preferences."""
+    m = re.search(r"Blocked companies[^:\n]*:\s*([^\n]*)", preferences, re.I)
+    if not m:
+        return set()
+    return {x.strip().lower() for x in re.split(r"[,/]", m.group(1)) if x.strip()}
+
+
 def _api_map(inp):
     """Ask the model for a reputable target-company list with public ATS slugs."""
     cap = limits(ROOT)["max_companies"]
@@ -91,14 +113,40 @@ def _api_map(inp):
     user = f"PREFERENCES:\n{inp['preferences']}\n\nRESUME:\n{inp['resume']}"
     data = json.loads(_chat([{"role": "system", "content": sys_msg},
                              {"role": "user", "content": user}]))
-    companies = data.get("companies", [])[:cap]
+    fresh = data.get("companies", [])
+
+    # Refresh (merge) rather than overwrite: keep existing rows — preserving your
+    # manual edits and each company's scrape `status` — drop blocked companies,
+    # and append newly-suggested reputable companies as `pending`.
+    comp_path = os.path.join(ROOT, "data", "companies.md")
+    blocked = _blocked_companies(inp["preferences"])
+    merged, seen = [], set()
+    for r in _parse_companies(comp_path):
+        key = r["company"].lower()
+        if key in blocked or key in seen:
+            continue
+        merged.append(r); seen.add(key)
+    kept = len(merged)
+    for c in fresh:
+        name = (c.get("company") or "").strip()
+        key = name.lower()
+        if not name or key in blocked or key in seen:
+            continue
+        merged.append({"company": name, "tier": c.get("tier", "walled"),
+                       "source": c.get("source", ""), "fit": c.get("fit", ""),
+                       "url": c.get("url", ""), "status": "pending"})
+        seen.add(key)
+    merged = merged[:cap]
+    kept_shown = min(kept, len(merged))
+    added = len(merged) - kept_shown
+
     rows = ["| company | tier | source | fit (why it matches you) | url | status |",
             "|---------|------|--------|--------------------------|-----|--------|"]
-    for c in companies:
-        rows.append(f"| {c.get('company','')} | {c.get('tier','walled')} | "
-                    f"{c.get('source','')} | {c.get('fit','')} | {c.get('url','')} | pending |")
-    write(os.path.join(ROOT, "data", "companies.md"), COMPANIES_HEADER + "\n".join(rows) + "\n")
-    print(f"  map: wrote {len(companies)} companies (cap {cap})")
+    for r in merged:
+        rows.append(f"| {r['company']} | {r['tier']} | {r['source']} | "
+                    f"{r['fit']} | {r['url']} | {r['status']} |")
+    write(comp_path, COMPANIES_HEADER + "\n".join(rows) + "\n")
+    print(f"  map: {len(merged)} companies ({added} new, {kept_shown} kept; cap {cap})")
 
 
 def _api_source():
@@ -145,7 +193,9 @@ def _api_ingest():
     path = os.path.join(ROOT, "inbox", "jobs.md")
     if not os.path.exists(path):
         return
-    text = read(path)
+    # Strip HTML comments first so the template's example block (which contains
+    # placeholder 'URL:'/'Description:' lines) is never ingested as a real job.
+    text = re.sub(r"<!--.*?-->", "", read(path), flags=re.S)
     blocks = [b for b in re.split(r"\n-{3,}\n", text) if "Description:" in b or "URL:" in b]
     added = 0
     for b in blocks:
@@ -155,15 +205,27 @@ def _api_ingest():
         m_ti = re.search(r"Title:\s*(.+)", b)
         url = m_url.group(1).strip() if m_url else ""
         desc = m_desc.group(1).strip() if m_desc else ""
-        if not desc:
+        # Skip empty or placeholder blocks (e.g. leftover "<the posting link>").
+        if not desc or desc.startswith("<") or url.startswith("<"):
             continue
         company = m_co.group(1).strip() if m_co else (
             re.sub(r"^https?://(www\.)?", "", url).split(".")[0].split("/")[0] or "Unknown")
         title = m_ti.group(1).strip() if m_ti else desc.split("\n")[0][:80]
+        title = title.lstrip("*: ").strip()[:120]
         register_job(ROOT, company, title, "", url, desc, source_site="paste")
         added += 1
     if added:
         print(f"  ingest: {added} pasted job(s) registered")
+
+
+def _api_linkedin():
+    """Source senior roles from LinkedIn's public board (personal-use, default-on).
+    Skips gracefully if `bun` isn't installed or LinkedIn blocks the request — the
+    run continues and make_search_links (below) provides the search-link fallback."""
+    try:
+        linkedin_source.main([], fallback=False)
+    except Exception as ex:  # noqa: BLE001 — sourcing must never abort the run
+        print(f"  linkedin: skipped ({ex})")
 
 
 def _run_api():
@@ -178,16 +240,12 @@ def _run_api():
               "copilot/claude/codex.")
         return 2
     print("Running headless pipeline (api runtime)…")
-    # map only if the registry has no companies yet
-    comp = os.path.join(ROOT, "data", "companies.md")
-    has_rows = os.path.exists(comp) and any(
-        len([x for x in l.split("|")]) >= 7 and l.split("|")[1].strip() not in ("company", "")
-        and set(l.split("|")[1].strip()) != {"-"} for l in read(comp).splitlines())
-    if not has_rows:
-        _api_map(inp)
-    else:
-        print("  map: companies.md already populated — skipping")
+    # Refresh the target-company list on every run (merge: adds newly-found
+    # reputable companies, keeps your manual edits + each company's scrape status,
+    # and drops blocked ones). Set-and-forget curation in data/companies.md is safe.
+    _api_map(inp)
     _api_source()
+    _api_linkedin()
     _api_ingest()
     make_search_links.main()
     score_mod.main([])   # scores stale/new jobs via the API

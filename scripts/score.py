@@ -22,7 +22,7 @@ import urllib.request
 from lib import (preferences_text, profile_hash, read, resume_text, sha1_8,
                  write)
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("AJH_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DETAILS = os.path.join(ROOT, "data", "jobs", "details")
 RESULTS = os.path.join(ROOT, "data", "results")
 TODAY = __import__("datetime").date.today().isoformat()

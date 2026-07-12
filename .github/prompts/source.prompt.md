@@ -25,6 +25,17 @@ For each company, by `tier`:
   set `walled`. Never forge signed requests or bypass anti-bot challenges.
 - **walled** / **manual** — do not scrape. Leave for manual paste.
 
+**LinkedIn (default-on, personal-use).** Independently of the per-company tiers,
+run `python scripts/linkedin_source.py` once. It searches your Preferences'
+titles × locations against LinkedIn's **public jobs-guest** board (via the
+vendored CLI in `tools/linkedin-cli/`, which needs `bun`), pulls each posting's
+full JD, and registers senior matches with the same idempotent `register_job`.
+⚠️ **Personal use only** — automated access is against LinkedIn's ToS; keep
+volume low and non-commercial. If `bun` isn't installed the script skips itself
+and tells the user to rely on `make_search_links.py` instead. Preview without
+registering via `--json`; cap per search with `--limit <N>`; restrict recency
+with `--jobage <days>`. This does **not** change scoring/ranking.
+
 **Register a role manually** (browser/ingest paths, when `--save` isn't used):
 - `id = slug(company)-slug(title)` (disambiguate with a location or `-2` suffix if
   it collides — or just call `register_job(...)` from `scripts/lib.py`, which does

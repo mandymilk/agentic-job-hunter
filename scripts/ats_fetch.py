@@ -177,7 +177,7 @@ def main(argv):
         return 0
 
     if save:
-        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        root = os.environ.get("AJH_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         company = company or (pos[0] if pos else kind)
         counts = {"new": 0, "updated": 0, "unchanged": 0, "skipped": 0}
         for j in jobs:

@@ -15,7 +15,7 @@ import sys
 
 from lib import preferences_text, read, search_links, search_terms
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("AJH_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IDX = os.path.join(ROOT, "data", "jobs", "index.md")
 RESULTS = os.path.join(ROOT, "data", "results")
 DETAILS = os.path.join(ROOT, "data", "jobs", "details")

@@ -16,7 +16,7 @@ import urllib.parse as up
 
 from lib import preferences_text, read, search_links, search_terms, write
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("AJH_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def company_site(company, title):
