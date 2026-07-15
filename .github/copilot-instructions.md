@@ -19,9 +19,18 @@ auto-apply, never suggest auto-applying.**
    rows (preserving manual edits + each company's scrape `status`), add newly-found
    reputable companies as `pending`, drop blocked ones — never wipe curation.
 2. **source** — pull jobs from readable boards into the registry; generate
-   `data/manual-search-links.md` for the rest.
+   `data/manual-search-links.md` for the rest. **Re-scrape every readable company
+   (`ats`/`browser`) on every run — not just `pending` ones** — so newly-posted
+   roles at already-scraped companies are always picked up. `register_job` is
+   idempotent, so re-scraping only adds new/changed roles and never duplicates.
 3. **ingest** — normalize any jobs the user pasted into `inbox/jobs.md`.
 4. **rank** — score every job and build `output/ranking.html`.
+
+**End-to-end is always a full refresh.** The company list (step 1) and scraping
+(step 2) run in full every time — always regenerate/refresh companies and always
+re-scrape all readable boards for new roles. **Only matching/scoring (step 4) is
+incremental:** reuse a job's result unless its `jd_hash` or the `resume_hash`
+changed. Never skip map/source just because they ran before.
 
 Each step has a prompt in `.github/prompts/`. The `job-hunter` agent can run them
 end to end. The user picks how to run in `inbox/input.md` (`runtime:` =

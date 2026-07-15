@@ -3,7 +3,13 @@ mode: agent
 description: Source jobs from readable boards into the registry; generate manual search links for the rest.
 ---
 
-Read `data/companies.md`. Work through companies whose `status` is `pending`.
+Read `data/companies.md`. **Re-scrape every readable company on every run** —
+work through **all** companies whose `tier` is `ats` or `browser`, not just those
+with `status: pending`. Already-scraped companies (`scraped:<N>`) keep getting new
+roles posted, so always re-fetch them; `register_job` is idempotent and only adds
+new/changed postings, so re-scraping never duplicates. Update each company's
+`status` to the fresh `scraped:<N>` / `no-matches` count after the run. Only
+`walled` / `manual` tiers are left for manual paste.
 Load **Blocked companies** from the Preferences section of `inbox/input.md` and skip them.
 
 For each company, by `tier`:
